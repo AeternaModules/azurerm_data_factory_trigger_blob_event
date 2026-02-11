@@ -24,7 +24,7 @@ EOT
     events                = set(string)
     name                  = string
     storage_account_id    = string
-    activated             = optional(bool, true)
+    activated             = optional(bool) # Default: true
     additional_properties = optional(map(string))
     annotations           = optional(list(string))
     blob_path_begins_with = optional(string)
