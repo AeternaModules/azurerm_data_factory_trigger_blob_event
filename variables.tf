@@ -36,5 +36,56 @@ EOT
       parameters = optional(map(string))
     })
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_trigger_blob_events : (
+        v.annotations == null || (length(v.annotations) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_trigger_blob_events : (
+        v.blob_path_begins_with == null || (length(v.blob_path_begins_with) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_trigger_blob_events : (
+        v.blob_path_ends_with == null || (length(v.blob_path_ends_with) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_trigger_blob_events : (
+        v.description == null || (length(v.description) > 0)
+      )
+    ])
+    error_message = "must not be empty"
+  }
+  # --- Unconfirmed validation candidates, derived from azurerm_data_factory_trigger_blob_event's provider source ---
+  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
+  # or a path that crosses a list-typed block (needs its own for_each wrapping).
+  # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   source:    [from validate.DataFactoryPipelineAndTriggerName] !regexp.MustCompile(`^[A-Za-z0-9_][^<>*#.%&:\\+?/]*$`).MatchString(value)
+  # path: data_factory_id
+  #   source:    [from factories.ValidateFactoryID] !ok
+  # path: data_factory_id
+  #   source:    [from factories.ValidateFactoryID] err != nil
+  # path: storage_account_id
+  #   source:    [from commonids.ValidateStorageAccountID] !ok
+  # path: storage_account_id
+  #   source:    [from commonids.ValidateStorageAccountID] err != nil
+  # path: events[*]
+  #   condition: contains(["Microsoft.Storage.BlobCreated", "Microsoft.Storage.BlobDeleted"], value)
+  #   message:   must be one of: Microsoft.Storage.BlobCreated, Microsoft.Storage.BlobDeleted
+  # path: pipeline.name
+  #   source:    [from validate.DataFactoryPipelineAndTriggerName] !regexp.MustCompile(`^[A-Za-z0-9_][^<>*#.%&:\\+?/]*$`).MatchString(value)
 }
 
