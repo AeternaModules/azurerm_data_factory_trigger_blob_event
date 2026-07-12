@@ -13,9 +13,12 @@ resource "azurerm_data_factory_trigger_blob_event" "data_factory_trigger_blob_ev
   description           = each.value.description
   ignore_empty_blobs    = each.value.ignore_empty_blobs
 
-  pipeline {
-    name       = each.value.pipeline.name
-    parameters = each.value.pipeline.parameters
+  dynamic "pipeline" {
+    for_each = each.value.pipeline
+    content {
+      name       = pipeline.value.name
+      parameters = pipeline.value.parameters
+    }
   }
 }
 

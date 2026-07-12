@@ -31,43 +31,11 @@ EOT
     blob_path_ends_with   = optional(string)
     description           = optional(string)
     ignore_empty_blobs    = optional(bool)
-    pipeline = object({
+    pipeline = list(object({
       name       = string
       parameters = optional(map(string))
-    })
+    }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_trigger_blob_events : (
-        v.annotations == null || (length(v.annotations) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_trigger_blob_events : (
-        v.blob_path_begins_with == null || (length(v.blob_path_begins_with) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_trigger_blob_events : (
-        v.blob_path_ends_with == null || (length(v.blob_path_ends_with) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.data_factory_trigger_blob_events : (
-        v.description == null || (length(v.description) > 0)
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_data_factory_trigger_blob_event's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
@@ -87,5 +55,17 @@ EOT
   #   message:   must be one of: Microsoft.Storage.BlobCreated, Microsoft.Storage.BlobDeleted
   # path: pipeline.name
   #   source:    [from validate.DataFactoryPipelineAndTriggerName] !regexp.MustCompile(`^[A-Za-z0-9_][^<>*#.%&:\\+?/]*$`).MatchString(value)
+  # path: annotations[*]
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: blob_path_begins_with
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: blob_path_ends_with
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: description
+  #   condition: length(value) > 0
+  #   message:   must not be empty
 }
 
