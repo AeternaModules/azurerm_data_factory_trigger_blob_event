@@ -24,7 +24,7 @@ EOT
     events                = set(string)
     name                  = string
     storage_account_id    = string
-    activated             = optional(bool) # Default: true
+    activated             = optional(bool)
     additional_properties = optional(map(string))
     annotations           = optional(list(string))
     blob_path_begins_with = optional(string)
@@ -36,6 +36,14 @@ EOT
       parameters = optional(map(string))
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.data_factory_trigger_blob_events : (
+        length(v.pipeline) >= 1
+      )
+    ])
+    error_message = "Each pipeline list must contain at least 1 items"
+  }
   # --- Unconfirmed validation candidates, derived from azurerm_data_factory_trigger_blob_event's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
